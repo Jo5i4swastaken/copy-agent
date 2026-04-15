@@ -1,0 +1,373 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+/* =============================================================================
+   Copy Agent Dashboard — Global Styles
+
+   Light-mode primary. Dark mode via .dark class on <html>.
+   Colors use HSL channels so Tailwind can inject opacity.
+   ============================================================================= */
+
+@layer base {
+  :root {
+    /* -- Surfaces -- */
+    --background:           0 0% 99%;
+    --surface:              0 0% 100%;
+    --elevated:             220 14% 96%;
+    --sidebar:              220 14% 97%;
+
+    /* -- Text -- */
+    --foreground:           240 10% 8%;
+    --foreground-secondary: 220 9% 40%;
+    --muted:                220 9% 58%;
+
+    /* -- Borders -- */
+    --border:               220 13% 88%;
+    --border-subtle:        220 13% 92%;
+
+    /* -- Accent: warm copper/amber -- */
+    --accent:               25 80% 52%;
+    --accent-foreground:    0 0% 100%;
+
+    /* -- Status -- */
+    --success:              160 72% 34%;
+    --warning:              38 92% 48%;
+    --error:                0 72% 51%;
+    --info:                 199 80% 42%;
+
+    /* -- Channels -- */
+    --channel-email:        25 80% 52%;
+    --channel-sms:          270 50% 55%;
+    --channel-seo:          160 72% 34%;
+    --channel-ad:           38 92% 48%;
+
+    /* -- Confidence -- */
+    --confidence-low:       20 80% 52%;
+    --confidence-medium:    42 80% 48%;
+    --confidence-high:      160 72% 34%;
+
+    /* -- Agent -- */
+    --agent-idle:           220 9% 58%;
+    --agent-thinking:       25 80% 52%;
+    --agent-error:          0 72% 51%;
+
+    /* -- Focus -- */
+    --ring:                 25 80% 52%;
+    --ring-offset:          0 0% 100%;
+
+    /* -- Layout -- */
+    --sidebar-width: 240px;
+    --sidebar-collapsed-width: 64px;
+    --chat-panel-width: 380px;
+    --header-height: 56px;
+
+    --transition-duration: 200ms;
+    --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --layout-transition: var(--transition-duration) var(--transition-easing);
+
+    --chat-panel-offset: 0px;
+
+    --z-sidebar: 40;
+    --z-chat-panel: 30;
+    --z-chat-fab: 50;
+    --z-overlay: 60;
+
+    --scrollbar-width: 6px;
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.24);
+  }
+
+  .dark {
+    /* -- Surfaces: warm olive-black, not cold blue -- */
+    --background:           40 6% 12%;
+    --surface:              40 5% 15%;
+    --elevated:             40 4% 19%;
+    --sidebar:              40 6% 10%;
+
+    /* -- Text: cream tones, not blue-white -- */
+    --foreground:           40 15% 90%;
+    --foreground-secondary: 35 8% 62%;
+    --muted:                35 6% 45%;
+
+    /* -- Borders: warm, subtle -- */
+    --border:               40 5% 22%;
+    --border-subtle:        40 4% 18%;
+
+    --accent:               25 85% 58%;
+    --accent-foreground:    0 0% 100%;
+
+    --success:              160 60% 42%;
+    --warning:              38 80% 54%;
+    --error:                0 65% 58%;
+    --info:                 190 50% 50%;
+
+    --channel-email:        25 85% 58%;
+    --channel-sms:          270 45% 62%;
+    --channel-seo:          160 60% 42%;
+    --channel-ad:           38 80% 54%;
+
+    --confidence-low:       20 70% 58%;
+    --confidence-medium:    42 70% 52%;
+    --confidence-high:      160 60% 42%;
+
+    --agent-idle:           35 6% 45%;
+    --agent-thinking:       25 85% 58%;
+    --agent-error:          0 65% 58%;
+
+    --ring:                 25 85% 58%;
+    --ring-offset:          40 6% 12%;
+
+    --scrollbar-thumb: rgba(255, 255, 255, 0.08);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.18);
+  }
+
+  /* -- Base resets -- */
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Layout Components
+   --------------------------------------------------------------------------- */
+
+@layer components {
+
+  .dashboard-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr var(--chat-panel-offset);
+    grid-template-rows: 1fr;
+    min-height: 100dvh;
+    transition: grid-template-columns var(--layout-transition);
+  }
+
+  .dashboard-layout[data-chat-open="true"] {
+    --chat-panel-offset: var(--chat-panel-width);
+  }
+
+  /* -- Sidebar -- */
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    width: var(--sidebar-width);
+    z-index: var(--z-sidebar);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width var(--layout-transition);
+    border-right: 1px solid hsl(var(--border));
+  }
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    color: hsl(var(--muted));
+    transition: background-color 150ms ease, color 150ms ease;
+    cursor: pointer;
+  }
+
+  .sidebar-nav-item:hover {
+    background-color: hsl(var(--foreground) / 0.05);
+    color: hsl(var(--foreground));
+  }
+
+  .sidebar-nav-item[data-active="true"] {
+    background-color: hsl(var(--accent) / 0.08);
+    color: hsl(var(--accent));
+    font-weight: 600;
+    position: relative;
+  }
+
+  .sidebar-nav-item[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background-color: hsl(var(--accent));
+  }
+
+  .sidebar-nav-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-nav-label {
+    opacity: 1;
+    transition: opacity var(--layout-transition);
+  }
+
+  /* -- Main -- */
+
+  .main-content {
+    min-width: 0;
+    overflow-y: auto;
+    height: 100dvh;
+  }
+
+  /* -- Chat Panel -- */
+
+  .chat-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: var(--chat-panel-width);
+    height: 100dvh;
+    z-index: var(--z-chat-panel);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform var(--layout-transition);
+    will-change: transform;
+    border-left: 1px solid hsl(var(--border));
+  }
+
+  .chat-panel[data-open="true"] {
+    transform: translateX(0);
+  }
+
+  .chat-panel-header {
+    flex-shrink: 0;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+
+  .chat-input-bar {
+    flex-shrink: 0;
+    padding: 12px 16px;
+  }
+
+  .chat-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: var(--z-chat-fab);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: transform 150ms ease, box-shadow 150ms ease, opacity var(--layout-transition);
+  }
+
+  .chat-fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .chat-fab:active {
+    transform: scale(0.95);
+  }
+
+  .chat-fab[data-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+  }
+
+  /* -- Responsive -- */
+
+  @media (max-width: 1023px) {
+    .dashboard-layout {
+      grid-template-columns: var(--sidebar-collapsed-width) 1fr var(--chat-panel-offset);
+    }
+    .sidebar { width: var(--sidebar-collapsed-width); }
+    .sidebar-nav-item { justify-content: center; padding: 10px 0; }
+    .sidebar-nav-label { opacity: 0; width: 0; overflow: hidden; }
+    .sidebar-nav-item[data-active="true"]::before { top: 8px; bottom: 8px; }
+  }
+
+  @media (max-width: 639px) {
+    .chat-panel { width: 100vw; }
+    .dashboard-layout[data-chat-open="true"] { --chat-panel-offset: 0px; }
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Utilities
+   --------------------------------------------------------------------------- */
+
+@layer utilities {
+
+  .chat-messages::-webkit-scrollbar { width: var(--scrollbar-width); }
+  .chat-messages::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  .chat-messages::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+  .chat-messages { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+
+  .main-content::-webkit-scrollbar { width: var(--scrollbar-width); }
+  .main-content::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  .main-content::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  .main-content::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+  .main-content { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+
+  .thinking-dot-1 { animation-delay: 0ms; }
+  .thinking-dot-2 { animation-delay: 160ms; }
+  .thinking-dot-3 { animation-delay: 320ms; }
+
+  .skeleton {
+    background-image: linear-gradient(90deg, hsl(var(--elevated) / 0.4) 0%, hsl(var(--elevated) / 0.8) 50%, hsl(var(--elevated) / 0.4) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+}

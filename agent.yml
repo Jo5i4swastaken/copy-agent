@@ -1,0 +1,108 @@
+name: Copy Agent
+model: gpt-5.2
+welcome_text: "Welcome. I'm your marketing copy agent — built to generate, track, and optimize copy across email, SMS, SEO, and advertising channels. I can draft high-converting variants, log performance metrics, analyze campaign results, and surface insights from past wins so every iteration gets sharper. Tell me what you're working on and I'll get started."
+instructions_file: instructions.md
+context: build_copy_context
+tools:
+  # Copy generation and campaign management
+  - generate_copy
+  - save_copy_variant
+  - list_campaigns
+  - get_campaign
+
+  # Metrics
+  - log_metrics
+  - get_variant_metrics
+
+  # Analysis and optimization
+  - analyze_campaign
+  - read_playbook
+  - save_learning
+  - design_ab_test
+  - identify_patterns
+  - get_recommendations
+
+  # Knowledge management
+  - save_audience_insight
+  - save_competitor_note
+  - search_knowledge
+
+  # Platform integrations
+  - send_email
+  - send_sms
+  - fetch_campaign_metrics
+  - check_integrations
+
+  # Channel specialists (Phase 4)
+  - specialist_email
+  - specialist_sms
+  - specialist_ad
+  - specialist_seo
+
+  # Multi-channel orchestration (Phase 4)
+  - plan_multi_channel_campaign
+  - dispatch_to_specialist
+  - list_active_tests
+
+  # A/B testing (Phase 4)
+  - start_ab_test
+  - check_ab_test
+  - conclude_ab_test
+
+  # Cross-channel learning transfer (Phase 4)
+  - evaluate_cross_channel_transfer
+  - apply_cross_channel_transfer
+  - review_transfer_results
+
+  # Analytics & reporting (Phase 4)
+  - compute_trends
+  - detect_anomalies
+  - generate_report
+  - list_reports
+  - get_report
+
+  # Research
+  - web_fetch
+
+  # Builtin tools
+  - read_file
+  - write_file
+  - edit_file
+  - glob_files
+  - grep_files
+  - web_search
+  - display_artifact
+model_settings:
+  temperature: 0.8
+  max_tokens: 4096
+use_safe_agent: true
+safe_agent_options:
+  safe_tool_names:
+    - read_playbook
+    - list_campaigns
+    - get_campaign
+    - get_variant_metrics
+    - analyze_campaign
+    - identify_patterns
+    - get_recommendations
+    - search_knowledge
+    - check_integrations
+    - fetch_campaign_metrics
+    - list_active_tests
+    - list_reports
+    - get_report
+    - compute_trends
+    - detect_anomalies
+    - read_file
+    - glob_files
+    - grep_files
+  safe_tool_patterns:
+    - "^read_.*"
+    - "^get_.*"
+    - "^list_.*"
+    - "^search_.*"
+    - "^identify_.*"
+    - "^check_.*"
+    - "^fetch_.*"
+    - "^compute_.*"
+    - "^detect_.*"

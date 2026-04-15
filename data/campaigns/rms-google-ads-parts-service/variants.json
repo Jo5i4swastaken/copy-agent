@@ -1,0 +1,35 @@
+[
+  {
+    "variant_id": "v1",
+    "channel": "ad",
+    "content": "**Headlines (pick 3):**\n1) Heavy Equipment Repair—Fast\n2) Reduce Downtime. Get Back to Work\n3) Expert Techs • Reliable Service\n4) Preventive Maintenance Available\n5) Mission, TX Equipment Service\n\n**Descriptions (pick 2):**\n1) Repairs & maintenance for all heavy equipment makes. Quick scheduling and expert technicians.\n2) Keep machines running—no excuses. Request a quote or book service today.\n\n**Assets/Extensions ideas:** Call extension: 888-RMS-2023 • Sitelinks: Schedule Service, Get a Quote, Request Parts\n",
+    "subject_line": "",
+    "cta": "Get a Quote",
+    "tone": "direct, performance-focused",
+    "notes": "Angle: downtime reduction + fast repairs. Good for service/repair intent keywords.",
+    "created_at": "2026-03-26T23:16:38.321421",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v2",
+    "channel": "ad",
+    "content": "**Headlines (pick 3):**\n1) Heavy Equipment Parts—Request Today\n2) Find the Right Part Fast\n3) Parts for Top Equipment Makes\n4) Send Part # or Photo—We’ll Help\n5) Local Support in Mission, TX\n\n**Descriptions (pick 2):**\n1) Need parts for your machine? Send make/model/serial or a photo. We’ll confirm availability & pricing.\n2) Keep your fleet moving with quality parts and responsive support. Start your request now.\n\n**Assets/Extensions ideas:** Sitelinks: Find Parts, Parts by Make, Contact • Call extension: 888-RMS-2023\n",
+    "subject_line": "",
+    "cta": "Request Parts",
+    "tone": "helpful, efficient",
+    "notes": "Angle: parts sourcing + speed. Best for parts/brand/model queries.",
+    "created_at": "2026-03-26T23:16:39.421778",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v3",
+    "channel": "ad",
+    "content": "**Headlines (pick 3):**\n1) Scheduled Service for Heavy Equipment\n2) Preventive Maintenance That Pays Off\n3) Expert Technicians—Book Now\n4) Fast, Reliable Equipment Repairs\n5) Customer Satisfaction Guaranteed\n\n**Descriptions (pick 2):**\n1) Book repairs or preventive maintenance with RMS. We’ll confirm your appointment by phone.\n2) Protect uptime and extend equipment life with professional service. Schedule your date today.\n\n**Assets/Extensions ideas:** Sitelinks: Appointments, Service, Contact • Call extension: 888-RMS-2023\n",
+    "subject_line": "",
+    "cta": "Schedule Service",
+    "tone": "professional, reassuring",
+    "notes": "Angle: scheduled service + preventive maintenance. Good for maintenance/inspection intent.",
+    "created_at": "2026-03-26T23:16:40.419314",
+    "status": "draft"
+  }
+]
