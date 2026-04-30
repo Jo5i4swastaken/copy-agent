@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Playbook } from "@/lib/types";
 
+const REQUEST_TIMEOUT_MS = 15_000;
+
 // ---------------------------------------------------------------------------
 // usePlaybook — fetch the marketing playbook with optional category filter
 // ---------------------------------------------------------------------------
@@ -51,7 +53,11 @@ export function usePlaybook(category?: string): UsePlaybookResult {
 
         const qs = params.toString();
         const url = qs ? `/api/playbook?${qs}` : "/api/playbook";
-        const res = await fetch(url);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
 
         if (!res.ok) {
           const body = await res.json().catch(() => null);
@@ -66,9 +72,13 @@ export function usePlaybook(category?: string): UsePlaybookResult {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load playbook",
-          );
+          if (err instanceof DOMException && err.name === "AbortError") {
+            setError("Request timed out");
+          } else {
+            setError(
+              err instanceof Error ? err.message : "Failed to load playbook",
+            );
+          }
         }
       } finally {
         if (!cancelled) {

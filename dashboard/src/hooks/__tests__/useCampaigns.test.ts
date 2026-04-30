@@ -34,6 +34,7 @@ describe("useCampaigns", () => {
     await waitFor(() => {
       expect(fetchSpy).toHaveBeenCalledWith(
         expect.stringContaining("channel=email"),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
       );
     });
   });
@@ -48,6 +49,7 @@ describe("useCampaigns", () => {
     await waitFor(() => {
       expect(fetchSpy).toHaveBeenCalledWith(
         expect.stringContaining("status=active"),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
       );
     });
   });

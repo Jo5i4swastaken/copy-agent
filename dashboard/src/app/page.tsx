@@ -15,10 +15,10 @@ import type { PlaybookEntry, PlaybookCategory } from "@/lib/types";
 // =============================================================================
 
 export default function DashboardPage() {
-  const { campaigns, isLoading: campaignsLoading } = useCampaigns();
-  const { playbook, isLoading: playbookLoading } = usePlaybook();
-  const { metrics, isLoading: metricsLoading } = useMetrics();
-  const { tests, isLoading: testsLoading } = useABTests();
+  const { campaigns, isLoading: campaignsLoading, error: campaignsError } = useCampaigns();
+  const { playbook, isLoading: playbookLoading, error: playbookError } = usePlaybook();
+  const { metrics, isLoading: metricsLoading, error: metricsError } = useMetrics();
+  const { tests, isLoading: testsLoading, error: testsError } = useABTests();
 
   const activeTestCount = useMemo(() => {
     return tests.filter((t) =>
@@ -60,9 +60,15 @@ export default function DashboardPage() {
   }, [playbook]);
 
   const isLoading = campaignsLoading || playbookLoading || metricsLoading || testsLoading;
+  const error = campaignsError || playbookError || metricsError || testsError;
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto animate-fade-in">
+      {error && (
+        <div className="mb-6 rounded-lg border border-border bg-surface p-4 text-sm text-foreground-secondary">
+          <span className="font-medium text-foreground">Dashboard load issue:</span> {error}
+        </div>
+      )}
       {/* -------------------------------------------------------------------
           Page Header
           ------------------------------------------------------------------- */}

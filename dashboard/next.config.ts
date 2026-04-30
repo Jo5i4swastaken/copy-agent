@@ -1,6 +1,7 @@
 import path from "path";
 
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -16,7 +17,7 @@ const nextConfig: NextConfig = {
   },
   // Permit imports from the parent directory so data-reader.ts can
   // resolve paths relative to COPY_AGENT_DATA_DIR.
-  outputFileTracingRoot: undefined,
+  outputFileTracingRoot: path.join(__dirname, ".."),
 };
 
 export default nextConfig;

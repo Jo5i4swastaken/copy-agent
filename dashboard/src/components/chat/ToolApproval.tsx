@@ -14,7 +14,27 @@ interface ToolApprovalProps {
  * Truncates a string value to a maximum length, adding ellipsis if needed.
  */
 function truncateValue(value: unknown, maxLength = 80): string {
-  const str = typeof value === 'string' ? value : JSON.stringify(value);
+  let str: string;
+
+  if (typeof value === 'string') {
+    str = value;
+  } else if (
+    value === null ||
+    typeof value === 'number' ||
+    typeof value === 'boolean' ||
+    typeof value === 'bigint'
+  ) {
+    str = String(value);
+  } else if (Array.isArray(value)) {
+    str = `[Array(${value.length})]`;
+  } else if (typeof value === 'object') {
+    const keys = Object.keys(value as Record<string, unknown>);
+    const shown = keys.slice(0, 6).join(', ');
+    str = keys.length <= 6 ? `{${shown}}` : `{${shown}, ...}`;
+  } else {
+    str = String(value);
+  }
+
   if (str.length <= maxLength) return str;
   return str.slice(0, maxLength) + '...';
 }

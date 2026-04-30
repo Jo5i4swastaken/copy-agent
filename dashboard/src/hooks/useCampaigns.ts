@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Campaign, CampaignSummary, Channel } from "@/lib/types";
 
+const REQUEST_TIMEOUT_MS = 15_000;
+
 // ---------------------------------------------------------------------------
 // useCampaigns — fetch the campaign list with optional filters
 // ---------------------------------------------------------------------------
@@ -58,7 +60,11 @@ export function useCampaigns(filters?: UseCampaignsFilters): UseCampaignsResult 
 
         const qs = params.toString();
         const url = qs ? `/api/campaigns?${qs}` : "/api/campaigns";
-        const res = await fetch(url);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
 
         if (!res.ok) {
           const body = await res.json().catch(() => null);
@@ -73,9 +79,13 @@ export function useCampaigns(filters?: UseCampaignsFilters): UseCampaignsResult 
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load campaigns",
-          );
+          if (err instanceof DOMException && err.name === "AbortError") {
+            setError("Request timed out");
+          } else {
+            setError(
+              err instanceof Error ? err.message : "Failed to load campaigns",
+            );
+          }
         }
       } finally {
         if (!cancelled) {
@@ -137,7 +147,14 @@ export function useCampaign(id: string | null | undefined): UseCampaignResult {
       setError(null);
 
       try {
-        const res = await fetch(`/api/campaigns/${encodeURIComponent(id!)}`);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+        const res = await fetch(
+          `/api/campaigns/${encodeURIComponent(id!)}`,
+          { signal: controller.signal },
+        );
+        clearTimeout(timeout);
 
         if (res.status === 404) {
           if (!cancelled) {
@@ -161,9 +178,13 @@ export function useCampaign(id: string | null | undefined): UseCampaignResult {
       } catch (err) {
         if (!cancelled) {
           setCampaign(null);
-          setError(
-            err instanceof Error ? err.message : "Failed to load campaign",
-          );
+          if (err instanceof DOMException && err.name === "AbortError") {
+            setError("Request timed out");
+          } else {
+            setError(
+              err instanceof Error ? err.message : "Failed to load campaign",
+            );
+          }
         }
       } finally {
         if (!cancelled) {

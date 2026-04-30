@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import type { AggregatedMetrics } from "@/lib/types";
 
+const REQUEST_TIMEOUT_MS = 15_000;
+
 // ---------------------------------------------------------------------------
 // useMetrics — fetch aggregated metrics for dashboard KPIs and charts
 // ---------------------------------------------------------------------------
@@ -39,7 +41,11 @@ export function useMetrics(): UseMetricsResult {
       setError(null);
 
       try {
-        const res = await fetch("/api/metrics");
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+        const res = await fetch("/api/metrics", { signal: controller.signal });
+        clearTimeout(timeout);
 
         if (!res.ok) {
           const body = await res.json().catch(() => null);
@@ -54,9 +60,13 @@ export function useMetrics(): UseMetricsResult {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load metrics",
-          );
+          if (err instanceof DOMException && err.name === "AbortError") {
+            setError("Request timed out");
+          } else {
+            setError(
+              err instanceof Error ? err.message : "Failed to load metrics",
+            );
+          }
         }
       } finally {
         if (!cancelled) {

@@ -177,6 +177,7 @@ function SystemMessage({ message }: { message: ChatMessage }) {
 function ToolApprovalMessage({ message, onApprove }: { message: ChatMessage; onApprove?: (requestId: string, approved: boolean) => void }) {
   // Parse the tool approval data from the first tool_activity entry
   const activity = message.tool_activity?.[0];
+  const requestId = message.id.startsWith('approval-') ? message.id.slice('approval-'.length) : message.id;
 
   if (!activity) {
     return <SystemMessage message={message} />;
@@ -187,7 +188,7 @@ function ToolApprovalMessage({ message, onApprove }: { message: ChatMessage; onA
       <ToolApproval
         toolName={activity.tool_name}
         args={activity.arguments}
-        requestId={message.id}
+        requestId={requestId}
         onApprove={(requestId: string, approved: boolean) => {
           onApprove?.(requestId, approved);
         }}
@@ -241,6 +242,7 @@ export default function ChatMessages({ messages, isRunning, onApproveToolCall }:
         {messages.map((message) => {
           // Check if this is a tool_approval message by inspecting tool_activity
           const isToolApproval =
+            message.id.startsWith('approval-') &&
             message.tool_activity &&
             message.tool_activity.length > 0 &&
             message.role === 'system';

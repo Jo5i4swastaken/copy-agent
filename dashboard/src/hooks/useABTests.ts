@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+const REQUEST_TIMEOUT_MS = 15_000;
+
 // ---------------------------------------------------------------------------
 // A/B Test types (client-side mirrors of API response)
 // ---------------------------------------------------------------------------
@@ -75,7 +77,11 @@ export function useABTests(): UseABTestsResult {
       setError(null);
 
       try {
-        const res = await fetch("/api/ab-tests");
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+        const res = await fetch("/api/ab-tests", { signal: controller.signal });
+        clearTimeout(timeout);
 
         if (!res.ok) {
           const body = await res.json().catch(() => null);
@@ -90,9 +96,13 @@ export function useABTests(): UseABTestsResult {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load A/B tests",
-          );
+          if (err instanceof DOMException && err.name === "AbortError") {
+            setError("Request timed out");
+          } else {
+            setError(
+              err instanceof Error ? err.message : "Failed to load A/B tests",
+            );
+          }
         }
       } finally {
         if (!cancelled) {
