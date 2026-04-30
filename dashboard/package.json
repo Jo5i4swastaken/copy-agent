@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently --names agent,next,open --prefix-colors yellow,cyan,green \"npm run agent\" \"next dev\" \"sleep 2 && open http://localhost:3000\"",
+    "dev": "NEXT_DISABLE_TURBOPACK=1 next dev",
+    "dev:full": "concurrently --names agent,next,open --prefix-colors yellow,cyan,green \"npm run agent\" \"next dev\" \"sleep 2 && open http://localhost:3000\"",
     "dev:next": "next dev",
     "agent": "cd .. && omniagents run -c agent.yml --mode server --port 9494",
     "build": "next build",
