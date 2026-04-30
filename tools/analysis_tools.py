@@ -7,7 +7,7 @@ for iterative copy optimization across email, SMS, SEO, and ad channels.
 
 from omniagents import function_tool
 from pathlib import Path
-from filelock import FileLock
+from tools.lock import FileLock
 from datetime import datetime, date
 import json
 import math

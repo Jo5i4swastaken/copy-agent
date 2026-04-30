@@ -1,0 +1,35 @@
+[
+  {
+    "variant_id": "v1",
+    "channel": "ad",
+    "content": "RSA Headlines (<=30 chars)\n1) Heavy Equipment Service\n2) RGV Equipment Repair\n3) Book a Service Check\n4) On-Site Equipment Techs\n5) Keep Machines Job-Ready\n6) Diagnose Issues Fast\n7) Schedule Service Today\n8) Prevent Costly Downtime\n9) Rio Grande Valley Pros\n10) Get a Repair Estimate\n11) Fleet Maintenance Help\n12) Fix It Before It Fails\n13) Trusted Local Service\n14) Call RMS Equipment Svcs\n15) Service for Your Equipment\n\nRSA Descriptions (<=90 chars)\n1) Get a professional inspection & clear next steps. Serving the Rio Grande Valley.\n2) Reduce downtime with scheduled maintenance and fast issue diagnosis. Call today.\n3) Repairs, service checks, and maintenance support for heavy equipment owners in RGV.\n4) Talk with a local tech team and schedule your service appointment.\n\nSuggested Sitelinks\n- Schedule Service\n- Request an Estimate\n- Preventive Maintenance\n- Service Areas (RGV)\n\nCallouts\nLocal RGV Service • On-Site Support • Maintenance Plans • Fast Scheduling",
+    "subject_line": "",
+    "cta": "Call for Inspection",
+    "tone": "direct, problem/solution",
+    "notes": "Offer angle: Service check/inspection + clear next steps. Built for calls/leads. Emphasizes diagnosis + downtime prevention.",
+    "created_at": "2026-04-29T18:12:04.803499",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v2",
+    "channel": "ad",
+    "content": "RSA Headlines (<=30 chars)\n1) Preventive Maintenance RGV\n2) Heavy Equipment PM Plans\n3) Keep Your Fleet Running\n4) Reduce Breakdown Risk\n5) Maintenance You Can Trust\n6) Service for Heavy Equipment\n7) Schedule PM Service Today\n8) Stay Ahead of Downtime\n9) Rio Grande Valley Service\n10) For Owners & Operators\n11) Plan Service Around Jobs\n12) Extend Equipment Life\n13) Maintenance Made Simple\n14) RMS Equipment Services\n15) Book Your PM Appointment\n\nRSA Descriptions (<=90 chars)\n1) Prevent breakdowns with routine service. Ask about a PM plan in the RGV.\n2) Keep machines ready between jobs with scheduled inspections and maintenance.\n3) One team for service checks, repairs, and ongoing maintenance support.\n4) Call RMS Equipment Services to set a maintenance schedule that fits your work.\n\nSuggested Sitelinks\n- Preventive Maintenance\n- Maintenance Scheduling\n- Request an Estimate\n- Contact / Call Now\n\nCallouts\nPM Scheduling • Fleet Support • Local RGV Team • Jobsite-Friendly",
+    "subject_line": "",
+    "cta": "Schedule PM",
+    "tone": "steady, reliability-focused",
+    "notes": "Offer angle: preventive maintenance plan/scheduling. Targets owners wanting reliability and fewer breakdowns.",
+    "created_at": "2026-04-29T18:12:11.327652",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v3",
+    "channel": "ad",
+    "content": "RSA Headlines (<=30 chars)\n1) Fast Equipment Repair RGV\n2) Get Back to Work Faster\n3) Heavy Equipment Repairs\n4) Schedule Service Today\n5) Talk to a Service Tech\n6) Downtime Costs—Fix It\n7) Rio Grande Valley Repair\n8) On-Site Service Available\n9) Request a Repair Estimate\n10) Quick Turn Service Slots\n11) Keep Crews Moving\n12) Repairs for Owners/Pros\n13) RMS Equipment Services\n14) Book Your Repair Visit\n15) Local Heavy Equipment Help\n\nRSA Descriptions (<=90 chars)\n1) When equipment’s down, jobs stop. Schedule repair service in the RGV today.\n2) Clear communication, practical fixes, and service support for heavy equipment.\n3) Call to request an estimate and book the next available service slot.\n4) Serving heavy equipment owners & operators across the Rio Grande Valley.\n\nSuggested Sitelinks\n- Request Repair Service\n- Next Available Slot\n- Request an Estimate\n- Service Areas (RGV)\n\nCallouts\nFast Scheduling • On-Site Support • Local RGV Service • Call Today",
+    "subject_line": "",
+    "cta": "Book Repair Service",
+    "tone": "urgent, action-oriented",
+    "notes": "Offer angle: fast scheduling/turnaround (without promising specific times). Leans into downtime pain.",
+    "created_at": "2026-04-29T18:12:17.821686",
+    "status": "draft"
+  }
+]

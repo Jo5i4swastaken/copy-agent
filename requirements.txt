@@ -1,6 +1,7 @@
 --extra-index-url https://pypi.fury.io/ericmichael/
 omniagents[all]>=0.6.31
 python-dotenv
+filelock>=3.13.0
 
 # Platform integrations (install only the ones you need)
 sendgrid>=6.11.0

@@ -11,7 +11,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from filelock import FileLock
+from tools.lock import FileLock
 from omniagents import function_tool
 
 from tools.stats import detect_anomaly

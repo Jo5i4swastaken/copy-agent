@@ -9,7 +9,7 @@ import json
 from datetime import date, datetime
 from pathlib import Path
 
-from filelock import FileLock
+from tools.lock import FileLock
 from omniagents import function_tool
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"

@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from filelock import FileLock
+from tools.lock import FileLock
 from omniagents import function_tool
 
 from tools.specialists.base_specialist import (

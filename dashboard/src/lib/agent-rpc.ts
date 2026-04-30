@@ -175,6 +175,52 @@ export function parseAgentMessage(message: string): ParsedMessage {
     const timestamp =
       (params.timestamp as string) ?? new Date().toISOString();
 
+    const getToolName = (): string => {
+      const toolName = params.tool_name ?? params.tool;
+      return typeof toolName === "string" && toolName.length > 0
+        ? toolName
+        : "<tool>";
+    };
+
+    const getToolArguments = (): Record<string, unknown> => {
+      const raw =
+        (params.arguments as unknown) ??
+        (params.input as unknown) ??
+        (params.args as unknown);
+
+      if (raw == null) return {};
+
+      if (typeof raw === "object" && !Array.isArray(raw)) {
+        return raw as Record<string, unknown>;
+      }
+
+      if (typeof raw === "string") {
+        const trimmed = raw.trim();
+        if (!trimmed) return {};
+        try {
+          const parsedJson = JSON.parse(trimmed) as unknown;
+          if (
+            parsedJson &&
+            typeof parsedJson === "object" &&
+            !Array.isArray(parsedJson)
+          ) {
+            return parsedJson as Record<string, unknown>;
+          }
+          return { input: parsedJson };
+        } catch {
+          return { input: trimmed };
+        }
+      }
+
+      return { input: raw };
+    };
+
+    const getToolResult = (): string => {
+      const raw = (params.result as unknown) ?? (params.output as unknown);
+      if (raw == null) return "";
+      return typeof raw === "string" ? raw : JSON.stringify(raw);
+    };
+
     switch (method as AgentEventType) {
       case "run_started": {
         const event: RunStartedEvent = {
@@ -189,8 +235,8 @@ export function parseAgentMessage(message: string): ParsedMessage {
         const event: ToolCalledEvent = {
           type: "tool_called",
           run_id: params.run_id as string,
-          tool_name: params.tool_name as string,
-          arguments: (params.arguments ?? {}) as Record<string, unknown>,
+          tool_name: getToolName(),
+          arguments: getToolArguments(),
           timestamp,
         };
         return { kind: "event", event };
@@ -200,8 +246,8 @@ export function parseAgentMessage(message: string): ParsedMessage {
         const event: ToolResultEvent = {
           type: "tool_result",
           run_id: params.run_id as string,
-          tool_name: params.tool_name as string,
-          result: params.result as string,
+          tool_name: getToolName(),
+          result: getToolResult(),
           timestamp,
         };
         return { kind: "event", event };
@@ -212,8 +258,8 @@ export function parseAgentMessage(message: string): ParsedMessage {
           type: "client_request",
           request_id: params.request_id as string,
           run_id: params.run_id as string,
-          tool_name: params.tool_name as string,
-          arguments: (params.arguments ?? {}) as Record<string, unknown>,
+          tool_name: getToolName(),
+          arguments: getToolArguments(),
           message: params.message as string,
           timestamp,
         };

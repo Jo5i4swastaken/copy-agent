@@ -1,0 +1,94 @@
+[
+  {
+    "variant_id": "v1",
+    "channel": "ad",
+    "content": "Need parts/service for heavy equipment? Get a fast quote for contractors & fleet managers. | Commercial-only requests. Include machine make/model + serial for pricing & lead times.",
+    "subject_line": "Get Equipment Parts Fast | Request a Fleet Quote | Commercial Accounts Only",
+    "cta": "Request Quote",
+    "tone": "professional",
+    "notes": "Google Search RSA. Direct parts/service angle with strong qualifiers (commercial-only, requires serial) to filter low-intent leads.",
+    "created_at": "2026-04-30T11:19:49.139303",
+    "status": "draft",
+    "generated_by": "specialist_ad"
+  },
+  {
+    "variant_id": "v2",
+    "channel": "ad",
+    "content": "Field service for contractors & fleets. Tell us location + machine details for scheduling. | Commercial work only. Minimum service call may apply to reduce small-job inquiries.",
+    "subject_line": "Book On-Site Service Now | Heavy Equipment Service | Minimum Service Call Applies",
+    "cta": "Schedule Service",
+    "tone": "urgent",
+    "notes": "Google Search RSA. Service-first approach with scheduling intent and explicit minimum service call qualifier to cut tire-kickers.",
+    "created_at": "2026-04-30T11:19:49.139335",
+    "status": "draft",
+    "generated_by": "specialist_ad"
+  },
+  {
+    "variant_id": "v3",
+    "channel": "ad",
+    "content": "Manage parts & service for multiple machines with one vendor. Ask about fleet accounts. | Commercial fleets only. Credit application required for terms; include company + jobsite info.",
+    "subject_line": "Open a Fleet Account | Equipment Pros Supply | Net Terms w/ Credit App",
+    "cta": "Apply for Account",
+    "tone": "benefit-driven",
+    "notes": "Google Search RSA. B2B account/terms qualifier (credit app) to attract higher-value fleet managers and reduce consumer leads.",
+    "created_at": "2026-04-30T11:19:49.139339",
+    "status": "draft",
+    "generated_by": "specialist_ad"
+  },
+  {
+    "variant_id": "v4",
+    "channel": "ad",
+    "content": "Request a rental quote with dates, jobsite zip, and equipment class needed. | Commercial rentals only. Minimum rental period may apply; confirm delivery/pickup requirements.",
+    "subject_line": "Need a Rental Quote? | Heavy Equipment Rentals | Contractors Only",
+    "cta": "Get Rental Quote",
+    "tone": "competitive",
+    "notes": "Google Search RSA (also usable on Meta). Rental-intent ad with jobsite/dates requirements and minimum period qualifier to improve lead quality.",
+    "created_at": "2026-04-30T11:19:49.139343",
+    "status": "draft",
+    "generated_by": "specialist_ad"
+  },
+  {
+    "variant_id": "v1",
+    "channel": "ad",
+    "content": "Headlines: Get Equipment Parts Fast | Request a Fleet Quote | Commercial Accounts Only\nDescriptions: Need parts/service for heavy equipment? Get a fast quote for contractors & fleet managers. | Commercial-only requests. Include machine make/model + serial for pricing & lead times.\nDisplay URL: equip-pros.com/quote",
+    "subject_line": "",
+    "cta": "Request Quote",
+    "tone": "professional",
+    "notes": "Differentiator: parts/service angle + strong qualifiers (commercial-only, requires serial) to filter low-intent leads. Suitable for Google Search RSA.",
+    "created_at": "2026-04-30T11:20:00.965620",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v2",
+    "channel": "ad",
+    "content": "Headlines: Book On-Site Service Now | Heavy Equipment Service | Minimum Service Call Applies\nDescriptions: Field service for contractors & fleets. Tell us location + machine details for scheduling. | Commercial work only. Minimum service call may apply to reduce small-job inquiries.\nDisplay URL: equip-pros.com/service",
+    "subject_line": "",
+    "cta": "Schedule Service",
+    "tone": "urgent",
+    "notes": "Differentiator: service-first + scheduling intent + minimum service call qualifier to cut tire-kickers. Suitable for Google Search RSA.",
+    "created_at": "2026-04-30T11:20:02.767496",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v3",
+    "channel": "ad",
+    "content": "Headlines: Open a Fleet Account | Equipment Pros Supply | Net Terms w/ Credit App\nDescriptions: Manage parts & service for multiple machines with one vendor. Ask about fleet accounts. | Commercial fleets only. Credit application required for terms; include company + jobsite info.\nDisplay URL: equip-pros.com/fleet",
+    "subject_line": "",
+    "cta": "Apply for Account",
+    "tone": "benefit-driven",
+    "notes": "Differentiator: B2B account/terms qualifier (credit app) to attract higher-value fleet managers. Suitable for Google Search RSA.",
+    "created_at": "2026-04-30T11:20:04.365002",
+    "status": "draft"
+  },
+  {
+    "variant_id": "v4",
+    "channel": "ad",
+    "content": "Headlines: Need a Rental Quote? | Heavy Equipment Rentals | Contractors Only\nDescriptions: Request a rental quote with dates, jobsite zip, and equipment class needed. | Commercial rentals only. Minimum rental period may apply; confirm delivery/pickup requirements.\nDisplay URL: equip-pros.com/rentals",
+    "subject_line": "",
+    "cta": "Get Rental Quote",
+    "tone": "competitive",
+    "notes": "Differentiator: rental-intent + jobsite/dates requirements + minimum period qualifier to improve lead quality. Suitable for Google Search RSA; also adaptable to Meta.",
+    "created_at": "2026-04-30T11:20:05.478861",
+    "status": "draft"
+  }
+]

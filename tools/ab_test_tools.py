@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from filelock import FileLock
+from tools.lock import FileLock
 from omniagents import function_tool
 
 from tools.stats import two_proportion_z_test, welch_t_test, check_early_stopping

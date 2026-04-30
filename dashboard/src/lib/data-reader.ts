@@ -43,8 +43,8 @@ export function getDataDir(): string {
   if (process.env.COPY_AGENT_DATA_DIR) {
     return path.resolve(process.env.COPY_AGENT_DATA_DIR);
   }
-  // dashboard/src/lib/data-reader.ts -> dashboard/ -> project root -> data/
-  return path.resolve(__dirname, "..", "..", "..", "..", "data");
+  // dashboard/ -> project root -> data/
+  return path.resolve(process.cwd(), "..", "data");
 }
 
 /**
