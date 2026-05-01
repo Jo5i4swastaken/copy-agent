@@ -1,9 +1,16 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect, type KeyboardEvent, type ChangeEvent } from 'react';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type KeyboardEvent,
+  type ChangeEvent,
+} from 'react';
 
 interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (message: string, files: File[], options: { thinking: boolean }) => void;
   disabled: boolean;
 }
 
@@ -13,7 +20,10 @@ const PADDING_Y = 20; // py-2.5 top + bottom = 20px
 
 export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [value, setValue] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [thinking, setThinking] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hasText = value.trim().length > 0;
 
@@ -40,8 +50,9 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const handleSend = useCallback(() => {
     const trimmed = value.trim();
     if (!trimmed || disabled) return;
-    onSend(trimmed);
+    onSend(trimmed, files, { thinking });
     setValue('');
+    setFiles([]);
 
     // Reset height after clearing
     requestAnimationFrame(() => {
@@ -49,7 +60,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         textareaRef.current.style.height = 'auto';
       }
     });
-  }, [value, disabled, onSend]);
+  }, [value, disabled, onSend, files, thinking]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -65,8 +76,33 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
     setValue(e.target.value);
   }, []);
 
+  const handleChooseFiles = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFilesSelected = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const list = e.target.files ? Array.from(e.target.files) : [];
+      setFiles(list);
+    },
+    [],
+  );
+
+  const handleRemoveFile = useCallback((name: string) => {
+    setFiles((prev) => prev.filter((f) => f.name !== name));
+  }, []);
+
   return (
     <div className="chat-input-bar">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        className="hidden"
+        onChange={handleFilesSelected}
+        disabled={disabled}
+      />
+
       <div
         className={`
           flex items-end gap-2 rounded-card border border-border
@@ -76,6 +112,34 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       >
+        <button
+          type="button"
+          onClick={handleChooseFiles}
+          disabled={disabled}
+          aria-label="Attach files"
+          className={
+            disabled
+              ? 'shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mb-0.5 bg-elevated text-muted cursor-not-allowed'
+              : 'shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mb-0.5 bg-elevated text-muted hover:text-foreground hover:bg-elevated/80'
+          }
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M6 4.5V11a2 2 0 1 0 4 0V4a2.5 2.5 0 0 0-5 0v7a3.5 3.5 0 1 0 7 0V5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
         <textarea
           ref={textareaRef}
           value={value}
@@ -93,6 +157,22 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
           `}
           style={{ overflowY: 'hidden' }}
         />
+
+        <button
+          type="button"
+          onClick={() => setThinking((v) => !v)}
+          disabled={disabled}
+          aria-label={thinking ? 'Disable thinking' : 'Enable thinking'}
+          className={
+            disabled
+              ? 'shrink-0 px-2 h-8 rounded-lg mb-0.5 bg-elevated text-muted cursor-not-allowed text-xs'
+              : thinking
+                ? 'shrink-0 px-2 h-8 rounded-lg mb-0.5 bg-accent/20 text-foreground text-xs hover:bg-accent/30'
+                : 'shrink-0 px-2 h-8 rounded-lg mb-0.5 bg-elevated text-muted text-xs hover:text-foreground hover:bg-elevated/80'
+          }
+        >
+          Think
+        </button>
 
         <button
           onClick={handleSend}
@@ -127,6 +207,22 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
           </svg>
         </button>
       </div>
+
+      {files.length > 0 && (
+        <div className="px-3 pt-2 flex flex-wrap gap-1">
+          {files.map((file) => (
+            <button
+              key={file.name}
+              type="button"
+              onClick={() => handleRemoveFile(file.name)}
+              className="text-[11px] px-2 py-1 rounded-full bg-elevated text-foreground-secondary hover:text-foreground"
+              title="Remove attachment"
+            >
+              {file.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
