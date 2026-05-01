@@ -56,14 +56,27 @@ export function resetIdCounter(): void {
  * agent and begins a new run.
  *
  * @param prompt - The user's message / instruction for the agent.
+ * @param options - Optional run options forwarded to OmniAgents.
  * @returns A serialized JSON string ready to send over the WebSocket.
  */
-export function createStartRun(prompt: string): string {
+export function createStartRun(
+  prompt: string,
+  options?: {
+    thinking?: boolean;
+    attachments?: { name: string; mime: string; data_base64: string }[];
+  },
+): string {
   const request: JsonRpcRequest = {
     jsonrpc: "2.0",
     id: nextId(),
     method: "start_run",
-    params: { prompt },
+    params: {
+      prompt,
+      ...(options?.thinking !== undefined ? { thinking: options.thinking } : {}),
+      ...(options?.attachments?.length
+        ? { attachments: options.attachments }
+        : {}),
+    },
   };
   return JSON.stringify(request);
 }

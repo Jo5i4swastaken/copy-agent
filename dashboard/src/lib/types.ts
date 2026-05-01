@@ -411,6 +411,7 @@ export interface ChatMessage {
   timestamp: string;           // ISO 8601 datetime
   tool_activity?: ToolActivity[];
   run_id?: string;
+  attachments?: { name: string; mime: string }[];
 }
 
 // ---------------------------------------------------------------------------
