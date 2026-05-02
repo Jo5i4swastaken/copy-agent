@@ -83,9 +83,35 @@ function EmptyState() {
  * Renders a single user message bubble (right-aligned, accent background).
  */
 function UserMessage({ message }: { message: ChatMessage }) {
+  const attachments = message.attachments ?? [];
+
   return (
     <div className="flex justify-end px-4 py-1.5">
       <div className="max-w-[85%] flex flex-col items-end gap-1">
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap justify-end gap-1">
+            {attachments.map((att) => {
+              const isImage = att.mime.startsWith('image/');
+              return (
+                <div
+                  key={`${att.name}-${att.mime}`}
+                  className="flex items-center gap-1 rounded-full bg-accent/20 text-accent-foreground px-2 py-1 text-[11px]"
+                  title={att.name}
+                >
+                  <span
+                    className={
+                      isImage
+                        ? 'inline-block h-4 w-4 rounded bg-accent/40'
+                        : 'inline-block h-4 w-4 rounded bg-elevated'
+                    }
+                    aria-hidden="true"
+                  />
+                  <span className="max-w-[220px] truncate">{att.name}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
         <div className="bg-accent text-accent-foreground rounded-2xl rounded-tr-md px-4 py-2.5">
           <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
         </div>

@@ -95,7 +95,12 @@ export function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
         />
 
         {/* Input */}
-        <ChatInput onSend={sendMessage} disabled={!isConnected} />
+        <ChatInput
+          onSend={(message, files, options) => {
+            sendMessage(message, files, options);
+          }}
+          disabled={!isConnected}
+        />
       </div>
 
       {/* Floating Action Button — visible when panel is closed */}
