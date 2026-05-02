@@ -112,11 +112,22 @@ export default function ABTestDetailPage() {
 
       {/* Metric comparison */}
       {test.current_metrics && Object.keys(test.current_metrics).length > 0 && (
-        <div className="mb-6">
-          <MetricComparison
-            metrics={test.current_metrics}
-            primaryMetric={test.decision_criteria.primary_metric}
-          />
+        <div className="mb-6 grid gap-4 grid-cols-1 md:grid-cols-2">
+          {Object.entries(test.current_metrics).map(([metricType, values]) => {
+            const variantIds = Object.keys(test.variants);
+            const controlVariantId = variantIds[0] || "control";
+            const treatmentVariantId = variantIds[1] || "treatment";
+            return (
+              <MetricComparison
+                key={metricType}
+                metricType={metricType}
+                controlVariantId={controlVariantId}
+                treatmentVariantId={treatmentVariantId}
+                controlValue={values[controlVariantId] ?? null}
+                treatmentValue={values[treatmentVariantId] ?? null}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -124,9 +135,11 @@ export default function ABTestDetailPage() {
       {test.result && (
         <div className="mb-6">
           <StatisticalResult
-            result={test.result}
-            winner={test.winner}
-            confidenceLevel={test.decision_criteria.minimum_confidence_level}
+            pValue={test.result.p_value ?? null}
+            effectSize={test.result.effect_size ?? null}
+            confidenceInterval={null}
+            verdict={test.winner ? "Winner Found" : "Inconclusive"}
+            winner={test.winner ?? test.result.winner ?? null}
           />
         </div>
       )}

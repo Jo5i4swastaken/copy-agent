@@ -119,7 +119,7 @@ interface TestCardProps {
     campaign_id: string;
     state: string;
     hypothesis: string;
-    next_check_at?: string;
+    next_check_at?: string | null;
     current_metrics?: Record<string, Record<string, number>>;
   };
 }

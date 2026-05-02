@@ -33,11 +33,7 @@ export interface UseAgentWebSocket {
   toolActivity: { name: string; args: Record<string, unknown> } | null;
 
   /** Send a user prompt — adds a user message and starts a run. */
-  sendMessage: (
-    prompt: string,
-    files: File[],
-    options: { thinking: boolean },
-  ) => void;
+  sendMessage: (prompt: string) => void;
   /** Respond to a tool approval request. */
   approveToolCall: (
     requestId: string,
@@ -59,8 +55,6 @@ export interface UseAgentWebSocket {
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY_MS = 3_000;
 
-const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -68,22 +62,6 @@ const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
 /** Generate a simple unique ID for chat messages. */
 function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(reader.error ?? new Error('FileReader error'));
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result !== 'string') {
-        reject(new Error('Unexpected FileReader result'));
-        return;
-      }
-      resolve(result);
-    };
-    reader.readAsDataURL(file);
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -348,7 +326,7 @@ export function useAgentWebSocket(): UseAgentWebSocket {
   // -------------------------------------------------------------------------
 
   const sendMessage: UseAgentWebSocket['sendMessage'] = useCallback(
-    (prompt: string, files: File[], options: { thinking: boolean }) => {
+    (prompt: string) => {
       void (async () => {
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
           console.warn(
@@ -357,85 +335,21 @@ export function useAgentWebSocket(): UseAgentWebSocket {
           return;
         }
 
-        const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
-        if (totalBytes > MAX_ATTACHMENT_BYTES) {
-          console.warn(
-            `[useAgentWebSocket] Attachments too large (${totalBytes} bytes) — refusing to send.`,
-          );
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: uid(),
-              role: 'system' as const,
-              content:
-                'Attachments are too large (25MB limit). Please remove some files and try again.',
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-          return;
-        }
-
-        const attachments = await Promise.all(
-          files.map(async (file) => {
-            const dataUrl = await readFileAsDataUrl(file);
-            const commaIdx = dataUrl.indexOf(',');
-            const data_base64 = commaIdx >= 0 ? dataUrl.slice(commaIdx + 1) : '';
-            return {
-              name: file.name,
-              mime: file.type || 'application/octet-stream',
-              data_base64,
-            };
-          }),
-        );
-
-        const totalBase64Bytes = attachments.reduce((sum, att) => {
-          const padding = att.data_base64.endsWith('==')
-            ? 2
-            : att.data_base64.endsWith('=')
-              ? 1
-              : 0;
-          const bytes = Math.floor((att.data_base64.length * 3) / 4) - padding;
-          return sum + Math.max(bytes, 0);
-        }, 0);
-        if (totalBase64Bytes > MAX_ATTACHMENT_BYTES) {
-          console.warn(
-            `[useAgentWebSocket] Base64 payload too large (${totalBase64Bytes} bytes) — refusing to send.`,
-          );
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: uid(),
-              role: 'system' as const,
-              content:
-                'Attachments are too large after encoding (25MB limit). Please remove some files and try again.',
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-          return;
-        }
-
-        // Add user message to the chat (metadata only; do not retain base64).
+        // Add user message to the chat
         const userMessage: ChatMessage = {
           id: uid(),
           role: 'user',
           content: prompt,
           timestamp: new Date().toISOString(),
-          ...(attachments.length
-            ? {
-                attachments: attachments.map(({ name, mime }) => ({ name, mime })),
-              }
-            : {}),
         };
         setMessages((prev) => [...prev, userMessage]);
 
         // Reset assistant accumulation for the new run.
         lastAssistantIdRef.current = null;
 
-        // We send files via OmniAgents' native `attachments` start_run param.
         wsRef.current.send(
           createStartRun(prompt, {
-            thinking: options.thinking,
-            ...(attachments.length ? { attachments } : {}),
+            thinking: false,
           }),
         );
       })();
