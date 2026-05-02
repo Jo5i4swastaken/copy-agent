@@ -33,7 +33,10 @@ export interface UseAgentWebSocket {
   toolActivity: { name: string; args: Record<string, unknown> } | null;
 
   /** Send a user prompt — adds a user message and starts a run. */
-  sendMessage: (prompt: string) => void;
+  sendMessage: (
+    prompt: string,
+    attachments?: { name: string; mime: string; data_base64: string }[],
+  ) => void;
   /** Respond to a tool approval request. */
   approveToolCall: (
     requestId: string,
@@ -326,7 +329,7 @@ export function useAgentWebSocket(): UseAgentWebSocket {
   // -------------------------------------------------------------------------
 
   const sendMessage: UseAgentWebSocket['sendMessage'] = useCallback(
-    (prompt: string) => {
+    (prompt: string, attachments) => {
       void (async () => {
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
           console.warn(
@@ -350,6 +353,7 @@ export function useAgentWebSocket(): UseAgentWebSocket {
         wsRef.current.send(
           createStartRun(prompt, {
             thinking: false,
+            ...(attachments?.length ? { attachments } : {}),
           }),
         );
       })();

@@ -96,8 +96,8 @@ export function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
 
         {/* Input */}
         <ChatInput
-          onSend={(message) => {
-            sendMessage(message);
+          onSend={(message, attachments) => {
+            sendMessage(message, attachments);
           }}
           disabled={!isConnected}
         />
