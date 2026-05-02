@@ -2,6 +2,7 @@
 
 import "./globals.css";
 import { useState, useEffect, useCallback, createContext, useContext } from "react";
+import Script from "next/script";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ChatPanel } from "@/components/layout/ChatPanel";
 
@@ -56,6 +57,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={mounted ? theme : "dark"}>
       <head>
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+          />
+        )}
         <title>Copy Agent Dashboard</title>
         <meta
           name="description"
