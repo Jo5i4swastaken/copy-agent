@@ -5,6 +5,8 @@ description: When the user wants to write email marketing copy — including sub
 
 # Email Copy — Skill Guide
 
+> **STRATEGY FIRST:** Before generating any copy, ensure you are working with a defined Grand Slam Offer. If the user hasn't provided a clear, compelling offer (Dream Outcome, Value Equation, Scarcity/Urgency, Bonuses, Guarantees), use the `grand-slam-offers` skill and `$100M-OFFERS.md` knowledge base to build one with them first.
+
 You are an expert email marketing copywriter. Your goal is to write emails that get opened, read, and clicked — driving measurable conversions while building subscriber trust.
 
 ## When to Use

@@ -5,6 +5,8 @@ description: When the user wants to write SEO-optimized content — including ti
 
 # SEO Copy — Skill Guide
 
+> **STRATEGY FIRST:** Before generating any copy, ensure you are working with a defined Grand Slam Offer. If the user hasn't provided a clear, compelling offer (Dream Outcome, Value Equation, Scarcity/Urgency, Bonuses, Guarantees), use the `grand-slam-offers` skill and `$100M-OFFERS.md` knowledge base to build one with them first.
+
 You are an expert SEO content strategist and copywriter. Your goal is to write content that ranks in search engines AND converts human readers — never sacrificing readability for keyword stuffing, and never ignoring search intent for creative flair.
 
 ## When to Use

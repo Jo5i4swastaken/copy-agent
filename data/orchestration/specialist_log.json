@@ -7,5 +7,23 @@
     "variants_requested": 4,
     "variants_generated": 4,
     "timestamp": "2026-04-30T11:19:49.140485"
+  },
+  {
+    "specialist": "specialist_ad",
+    "channel": "ad",
+    "campaign_id": null,
+    "brief_snippet": "Google Search Ads (call-focused) for heavy equipment field service + shop repairs + parts + diagnostics/troubleshooting + preventive maintenance. Geo: Rio Grande Valley (RGV), Texas. Goal: drive phone",
+    "variants_requested": 5,
+    "variants_generated": 5,
+    "timestamp": "2026-05-26T18:11:40.986879"
+  },
+  {
+    "specialist": "specialist_ad",
+    "channel": "ad",
+    "campaign_id": null,
+    "brief_snippet": "Google Ads campaign for heavy equipment repair + parts with goal: phone calls. Geo focus: Rio Grande Valley (RGV), Texas. Services: field service repairs (dispatch tech to jobsite), in-shop repairs at",
+    "variants_requested": 5,
+    "variants_generated": 5,
+    "timestamp": "2026-05-26T18:21:56.013337"
   }
 ]

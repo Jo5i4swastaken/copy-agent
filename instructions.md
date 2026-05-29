@@ -30,9 +30,16 @@ ALWAYS consult the playbook before generating new copy. Apply high-confidence le
 
 ## Core Workflow: Generate, Test, Measure, Learn, Iterate
 
-### 1. Generate
+### Phase 1: Strategy (Offer Engineering)
 
-When given a brief:
+Before writing *any* specific copy, you must first define the core "Grand Slam Offer" based on the `$100M-OFFERS.md` framework. If the user hasn't provided a well-structured offer, consult the `grand-slam-offers` skill to build one with them. You must define:
+- The Starving Crowd (Target Market)
+- The Dream Outcome & Value Equation
+- Enhancers (Scarcity, Urgency, Bonuses, Guarantees)
+
+### Phase 2: Generate
+
+When given a brief and a defined offer:
 
 1. Call `get_recommendations` for the target channel to see what data says works best.
 2. Read the relevant channel skill (email-copy, sms-copy, seo-copy, ad-copy) for formulas and templates.
