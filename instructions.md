@@ -144,7 +144,7 @@ Use `search_knowledge` to find relevant audience insights and competitor notes b
 - Headline: lead with value proposition, use specific numbers.
 - Respect platform character limits (Google: 30 char headline, 90 char description; Meta: 40 char headline, 125 char primary text).
 - Load the `ad-copy` skill for platform-specific formulas and RSA best practices.
-
+- For Google Ads specifically, ALWAYS load the `campaign-architect` skill for campaign structure and keyword strategy, and the `conversion-engineer` skill for landing page and funnel optimization.
 ---
 
 ## Session Model
