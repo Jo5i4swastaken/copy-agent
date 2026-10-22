@@ -1,5 +1,5 @@
 name: Copy Agent
-model: gpt-5.2
+model: litellm/anthropic/claude-opus-5-5
 welcome_text: "Welcome. I'm your marketing copy agent — built to generate, track, and optimize copy across email, SMS, SEO, and advertising channels. I can draft high-converting variants, log performance metrics, analyze campaign results, and surface insights from past wins so every iteration gets sharper. Tell me what you're working on and I'll get started."
 instructions_file: instructions.md
 context: build_copy_context
@@ -72,9 +72,26 @@ tools:
   - grep_files
   - web_search
   - display_artifact
+# Claude via LiteLLM (reads ANTHROPIC_API_KEY from .env).
+# - No temperature: the Anthropic API rejects sampling params on every model.
+# - reasoning.effort is required for the SDK to pass Claude's thinking blocks
+#   back between tool calls; LiteLLM maps it to output_config.effort.
+# - drop_block: the system prompt is re-rendered each turn (playbook, recent
+#   campaigns), so stale thinking blocks are dropped instead of failing the call.
+#   It sits in extra_body because Omni drops extra_args on a session effort override.
+# - max_tokens covers Claude's thinking plus the reply.
 model_settings:
-  temperature: 0.8
-  max_tokens: 4096
+  max_tokens: 16000
+  reasoning:
+    effort: high
+  extra_body:
+    thinking:
+      type: adaptive
+      display: summarized
+      block_binding:
+        prefix_mismatch_behavior: drop_block
+  extra_headers:
+    anthropic-beta: thinking-binding-controls-2026-08-01
 use_safe_agent: true
 safe_agent_options:
   safe_tool_names:

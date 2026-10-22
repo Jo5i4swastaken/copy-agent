@@ -4,7 +4,7 @@ Shared base logic for channel specialists.
 Provides:
   - Skill file loading (reads SKILL.md for any channel skill)
   - Playbook reading for channel-specific learnings
-  - LLM call wrapper (httpx POST to the OpenAI-compatible endpoint from .env)
+  - LLM call wrapper (Claude via the Anthropic SDK, key from .env)
   - Variant structuring (parses LLM output into save-ready dicts)
 """
 
@@ -16,7 +16,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-import httpx
+import anthropic
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
@@ -32,16 +32,19 @@ _PLAYBOOK_PATH: Path = _DATA_DIR / "playbook.json"
 load_dotenv(_AGENT_ROOT / ".env")
 
 # ---------------------------------------------------------------------------
-# LLM endpoint configuration
+# LLM configuration (Claude via the Anthropic SDK; reads ANTHROPIC_API_KEY)
 # ---------------------------------------------------------------------------
-_OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-_OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-_SPECIALIST_MODEL: str = os.getenv("SPECIALIST_MODEL", "gpt-5.2")
-_SPECIALIST_TEMPERATURE: float = float(os.getenv("SPECIALIST_TEMPERATURE", "0.8"))
-_SPECIALIST_MAX_TOKENS: int = int(os.getenv("SPECIALIST_MAX_TOKENS", "4096"))
+_SPECIALIST_MODEL: str = os.getenv("SPECIALIST_MODEL", "claude-opus-5-5")
+_SPECIALIST_EFFORT: str = os.getenv("SPECIALIST_EFFORT", "high")
+# Claude always thinks before answering, so this covers thinking + the reply
+_SPECIALIST_MAX_TOKENS: int = int(os.getenv("SPECIALIST_MAX_TOKENS", "16000"))
 
 # Timeout for specialist LLM calls (seconds)
-_LLM_TIMEOUT: float = 90.0
+_LLM_TIMEOUT: float = 300.0
+
+# Server-side fallback: a request Claude's safety classifiers decline is
+# re-run on Anthropic's recommended fallback model instead of failing.
+_FALLBACK_BETA: str = "server-side-fallback-2026-07-01"
 
 
 # ---------------------------------------------------------------------------
@@ -138,60 +141,68 @@ def format_learnings_for_prompt(learnings: list[dict], max_items: int = 10) -> s
 # LLM call wrapper
 # ---------------------------------------------------------------------------
 
+def _anthropic_client() -> anthropic.Anthropic:
+    """Build the Anthropic client (separate so tests can swap it out)."""
+    return anthropic.Anthropic(timeout=_LLM_TIMEOUT)
+
+
 def call_specialist_llm(
     system_prompt: str,
     user_prompt: str,
-    temperature: float | None = None,
     max_tokens: int | None = None,
 ) -> str:
-    """Make a synchronous LLM call to the OpenAI-compatible endpoint.
+    """Make a synchronous Claude call for a specialist brief.
 
-    Uses httpx to call the same endpoint configured in .env so that all
-    specialist calls route through the same provider as the conductor.
+    Uses the same Anthropic key as the conductor. There is no temperature
+    setting: the Anthropic API rejects sampling params, and output quality is
+    tuned with ``effort`` (SPECIALIST_EFFORT) instead.
 
     Args:
         system_prompt: The system message for the specialist.
         user_prompt: The user message containing the brief.
-        temperature: Override default temperature if provided.
         max_tokens: Override default max_tokens if provided.
 
     Returns:
         The assistant's response text, or an error message on failure.
     """
-    if not _OPENAI_API_KEY:
-        return "[Error: OPENAI_API_KEY not set in environment]"
-
-    url = f"{_OPENAI_BASE_URL.rstrip('/')}/chat/completions"
-
-    payload = {
-        "model": _SPECIALIST_MODEL,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        "temperature": temperature if temperature is not None else _SPECIALIST_TEMPERATURE,
-        "max_tokens": max_tokens if max_tokens is not None else _SPECIALIST_MAX_TOKENS,
-    }
-
-    headers = {
-        "Authorization": f"Bearer {_OPENAI_API_KEY}",
-        "Content-Type": "application/json",
-    }
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        return "[Error: ANTHROPIC_API_KEY not set in environment]"
 
     try:
-        with httpx.Client(timeout=_LLM_TIMEOUT) as client:
-            response = client.post(url, json=payload, headers=headers)
-            response.raise_for_status()
-            data = response.json()
-            return data["choices"][0]["message"]["content"]
-    except httpx.TimeoutException:
+        response = _anthropic_client().beta.messages.create(
+            model=_SPECIALIST_MODEL,
+            max_tokens=max_tokens if max_tokens is not None else _SPECIALIST_MAX_TOKENS,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
+            output_config={"effort": _SPECIALIST_EFFORT},
+            betas=[_FALLBACK_BETA],
+            fallbacks="default",
+        )
+    except anthropic.APITimeoutError:
         return "[Error: Specialist LLM call timed out after {:.0f}s]".format(
             _LLM_TIMEOUT
         )
-    except httpx.HTTPStatusError as exc:
-        return f"[Error: LLM returned HTTP {exc.response.status_code}: {exc.response.text[:500]}]"
+    except anthropic.AuthenticationError:
+        return "[Error: Anthropic rejected the API key -- check ANTHROPIC_API_KEY in .env]"
+    except anthropic.RateLimitError:
+        return "[Error: Anthropic rate limit reached -- try again shortly]"
+    except anthropic.APIStatusError as exc:
+        return f"[Error: LLM returned HTTP {exc.status_code}: {str(exc.message)[:500]}]"
+    except anthropic.APIConnectionError as exc:
+        return f"[Error: Could not reach the Anthropic API: {exc}]"
     except Exception as exc:
         return f"[Error: Specialist LLM call failed: {exc}]"
+
+    # A decline is an HTTP 200 -- check it before reading content
+    if response.stop_reason == "refusal":
+        category = response.stop_details.category if response.stop_details else None
+        return f"[Error: Claude declined this brief (category: {category})]"
+
+    # Content can hold thinking blocks too; only the text blocks are the reply
+    text = "".join(block.text for block in response.content if block.type == "text")
+    if not text:
+        return f"[Error: Claude returned no text (stop_reason: {response.stop_reason})]"
+    return text
 
 
 # ---------------------------------------------------------------------------
