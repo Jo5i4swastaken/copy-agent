@@ -2,17 +2,21 @@
 Tests for tools/specialists/base_specialist.py — shared specialist logic.
 
 Tests parse_variants_from_response (JSON, markdown, freeform), load_skill,
-load_playbook_learnings, format_learnings_for_prompt, and prompt builders.
-LLM calls are NOT tested here (would need httpx mocking).
+load_playbook_learnings, format_learnings_for_prompt, prompt builders, and
+call_specialist_llm (against a fake Anthropic client -- no network).
 """
 
 import json
+from types import SimpleNamespace
 
+import anthropic
+import httpx2
 import pytest
 
 from tools.specialists.base_specialist import (
     build_specialist_system_prompt,
     build_specialist_user_prompt,
+    call_specialist_llm,
     format_learnings_for_prompt,
     load_playbook_learnings,
     load_skill,
@@ -277,3 +281,96 @@ class TestBuildSpecialistUserPrompt:
         result = build_specialist_user_prompt(brief="Brief", num_variants=1)
         assert "audience" not in result.lower()
         assert "constraints" not in result.lower()
+
+
+# =========================================================================
+# call_specialist_llm
+# =========================================================================
+
+class _FakeMessages:
+    """Records the create() kwargs and returns (or raises) a canned result."""
+
+    def __init__(self, result):
+        self.result = result
+        self.calls = []
+
+    def create(self, **kwargs):
+        self.calls.append(kwargs)
+        if isinstance(self.result, Exception):
+            raise self.result
+        return self.result
+
+
+def _fake_client(monkeypatch, result):
+    messages = _FakeMessages(result)
+    client = SimpleNamespace(beta=SimpleNamespace(messages=messages))
+    monkeypatch.setattr(bs, "_anthropic_client", lambda: client)
+    return messages
+
+
+def _response(blocks, stop_reason="end_turn", stop_details=None):
+    return SimpleNamespace(content=blocks, stop_reason=stop_reason, stop_details=stop_details)
+
+
+def _request():
+    return httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+
+
+class TestCallSpecialistLlm:
+    @pytest.fixture(autouse=True)
+    def api_key(self, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+
+    def test_returns_text_and_skips_thinking_blocks(self, monkeypatch):
+        _fake_client(monkeypatch, _response([
+            SimpleNamespace(type="thinking", thinking=""),
+            SimpleNamespace(type="text", text='[{"variant_id": "v1"}]'),
+        ]))
+        assert call_specialist_llm("system", "brief") == '[{"variant_id": "v1"}]'
+
+    def test_request_shape(self, monkeypatch):
+        messages = _fake_client(monkeypatch, _response([SimpleNamespace(type="text", text="ok")]))
+        call_specialist_llm("You are an email specialist.", "Write 2 variants")
+        sent = messages.calls[0]
+        assert sent["model"] == bs._SPECIALIST_MODEL
+        assert sent["system"] == "You are an email specialist."
+        assert sent["messages"] == [{"role": "user", "content": "Write 2 variants"}]
+        assert sent["output_config"] == {"effort": bs._SPECIALIST_EFFORT}
+        assert sent["fallbacks"] == "default"
+        assert sent["betas"] == ["server-side-fallback-2026-07-01"]
+        # The Anthropic API rejects sampling params
+        assert "temperature" not in sent
+
+    def test_max_tokens_override(self, monkeypatch):
+        messages = _fake_client(monkeypatch, _response([SimpleNamespace(type="text", text="ok")]))
+        call_specialist_llm("s", "u", max_tokens=2000)
+        assert messages.calls[0]["max_tokens"] == 2000
+
+    def test_refusal_returns_error(self, monkeypatch):
+        _fake_client(monkeypatch, _response(
+            [], stop_reason="refusal", stop_details=SimpleNamespace(category="cyber"),
+        ))
+        result = call_specialist_llm("s", "u")
+        assert result.startswith("[Error:")
+        assert "cyber" in result
+
+    def test_empty_text_returns_error(self, monkeypatch):
+        _fake_client(monkeypatch, _response([], stop_reason="max_tokens"))
+        result = call_specialist_llm("s", "u")
+        assert result.startswith("[Error:")
+        assert "max_tokens" in result
+
+    def test_missing_api_key_skips_call(self, monkeypatch):
+        monkeypatch.delenv("ANTHROPIC_API_KEY")
+        messages = _fake_client(monkeypatch, _response([SimpleNamespace(type="text", text="ok")]))
+        assert call_specialist_llm("s", "u") == "[Error: ANTHROPIC_API_KEY not set in environment]"
+        assert messages.calls == []
+
+    def test_timeout_returns_error(self, monkeypatch):
+        _fake_client(monkeypatch, anthropic.APITimeoutError(request=_request()))
+        assert "timed out" in call_specialist_llm("s", "u")
+
+    def test_bad_key_returns_error(self, monkeypatch):
+        response = httpx2.Response(401, request=_request())
+        _fake_client(monkeypatch, anthropic.AuthenticationError("invalid x-api-key", response=response, body=None))
+        assert "ANTHROPIC_API_KEY" in call_specialist_llm("s", "u")

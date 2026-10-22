@@ -10,7 +10,7 @@ This is a starter kit for building AI agents with OmniAgents. Students use `omni
 - **Instructions**: `instructions.md` is the system prompt. Write it in plain markdown — tell the model who it is and how to behave.
 - **Custom tools**: Python files in `tools/` with functions decorated with `@function_tool` from `omniagents` (not from `agents` — the import source matters for tool discovery).
 - **Environment**: API keys and config go in `.env` (never committed). See `.env.example` for the template.
-- **Model**: Default model is `gpt-5.2` via `OPENAI_BASE_URL=https://rgvaiclass.com/v1`.
+- **Model**: Claude Opus 5.5 (`litellm/anthropic/claude-opus-5-5` in `agent.yml`), routed through LiteLLM with `ANTHROPIC_API_KEY` from `.env`. The channel specialists call Claude through the Anthropic SDK (`SPECIALIST_MODEL`, default `claude-opus-5-5`). Don't add `temperature`/`top_p` to `model_settings`: the Anthropic API rejects them. Tune `reasoning.effort` instead.
 
 ## How to help the user
 
